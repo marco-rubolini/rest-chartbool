@@ -107,10 +107,12 @@ $.ajax({
             // console.log('percentuale' + percentuale);
         }
 
-
+            // Estraggo le chiavi dell'oggetto vendite mensili
+            // Queste corrispondono ai nomi dei mesi
             var chiavi = Object.keys(vendite_mensili);
             console.log(chiavi);
-
+            // Estraggo i valori dell'oggetto vendite mensili
+            // Queste corrispondono agli importi delle vendite nel mese
             var valori = Object.values(vendite_mensili);
             console.log(valori);
 
@@ -152,11 +154,15 @@ $.ajax({
                 }
             });
 
+            // Estraggo le chiavi dell'oggetto contributo venditore
+            // Queste corrispondono ai nomi dei venditori
             var chiavi = Object.keys(contributo_venditore);
             console.log(chiavi);
-
+            // Estraggo i valori dell'oggetto vendite contributo venditore
+            // Queste corrispondono alle vendite totali di ciascun venditore
             var valori = Object.values(contributo_venditore);
             console.log(valori);
+
             var contributo = [];
             for (var i = 0; i < valori.length; i++) {
                 var percentuale = (valori[i]/fatturato_totale*100).toFixed(2);
