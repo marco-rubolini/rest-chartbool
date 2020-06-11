@@ -1,8 +1,14 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .chart-container {
     width: 800px;
     margin: 0 auto;
 }
 
-#myChart, #myChart2 {
+#grafico_vendite_mensili, #grafico_vendite_venditori {
     margin: 50px 0;
 }
