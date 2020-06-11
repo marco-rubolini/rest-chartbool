@@ -12,3 +12,16 @@
 #grafico_vendite_mensili, #grafico_vendite_venditori {
     margin: 50px 0;
 }
+
+header {
+    text-align: center;
+    width: 800px;
+    margin: 30px auto;
+}
+
+
+
+input, select {
+    width: 200px;
+    margin: 0 20px;
+}

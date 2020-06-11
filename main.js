@@ -4,47 +4,99 @@ var url_api = 'http://157.230.17.132:4023/sales';
 
 moment.locale('it');
 
-$.ajax({
-    url: url_api,
-    method: 'GET',
-    success : function (vendite) {
-    // ---------------- Grafico vendite vendite_mensili--------------------------
+visualizza_dati();
 
-        // Costruisco un oggetto che mappa i mesi con i dati delle vendite
-        var dati_vendite_mensili = genera_vendite_mensili(vendite);
+// Intercetto il click sul pulsante
 
-        // Estraggo le chiavi dell'oggetto vendite mensili che saranno le etichette del grafico
-        // Queste corrispondono ai nomi dei mesi
-        var mesi = Object.keys(dati_vendite_mensili);
-        console.log(mesi);
+$('#invio-dati').click(function(){
 
-        // Estraggo i valori dell'oggetto vendite mensili che saranno i dati del grafico
-        // Queste corrispondono agli importi delle vendite nel mese
-        var dati_mesi = Object.values(dati_vendite_mensili);
-        console.log(dati_mesi);
-        // Disegno il grafico passando le etichette e i dati
-        disegna_grafico_vendite_mensili(mesi, dati_mesi)
+    // Leggo il valore dell'option nella select venditori
+    var venditore_selezionato = $('.venditori').val();
+    // Leggo il valore dell'option nella select mese
+    var mese_selezionato = $('.mese').val();
+    // recupero di nuovo la data corretta dalla stringa del mese con moment.js
+    mese_selezionato = moment(mese_selezionato, "MMMM");
 
-    // ---------------- Grafico vendite venditore--------------------------
+    mese_selezionato = mese_selezionato.format("01/MM/2017");
+    // Leggo l'importo inserito nell'input dall'utente
+    var importo_inserito = $('.importo-vendita-aggiunta').val();
 
-        // Costruisco un oggetto che mappa i venditori con il totale delle vendite
-        var dati_vendite_venditore = genera_vendite_venditori(vendite);
+    // Verifico che tutti i campi siano compilati
+    if (importo_inserito <= 0 || mese_selezionato == 'Invalid date' || venditore_selezionato == '')  {
+        // se almeno uno di questi campi non è compilato
+        alert('Devi riempire tutti i campi')
+    }   else {
+        // se tutti i campi sono compilati
+        // faccio partire la chiamata ajax con metodo post ed inserisco i nuovi dati
+            $.ajax({
+                url: 'http://157.230.17.132:4023/sales',
+                method: 'POST',
+                data: {
+                    salesman: venditore_selezionato,
+                    amount: importo_inserito,
+                    date: mese_selezionato
+                },
+                success: function (){
+                    // Visualizzo i grafici aggiornati
+                    visualizza_dati();
+                }
 
-        // Estraggo le chiavi dell'oggetto dati_vendite_venditore
-        // Queste corrispondono ai nomi dei venditori
-        var nomi_venditori = Object.keys(dati_vendite_venditore);
-        console.log(nomi_venditori);
-        // Estraggo i valori dell'oggetto vendite contributo venditore
-        // Queste corrispondono alle vendite totali di ciascun venditore
-        var dati_venditori = Object.values(dati_vendite_venditore);
-        console.log(dati_venditori);
-        // Disegno il grafico passando le etichette e i dati
-        disegna_grafico_vendite_venditori(nomi_venditori, dati_venditori)
+                ,
+                error : function () {
+                    alert("E' avvenuto un errore. "+errore);
+                }
+            })
+        }
 
-    },
-    error : function () {
-        alert("E' avvenuto un errore. "+errore);
-}
+
+
+    // $.ajax({
+    //     url: url_api,
+    //     method: 'POST',
+    //     data: {
+    //         salesman: venditore_selezionato,
+    //         amount: importo_inserito,
+    //         date: mese_selezionato
+    //     },
+    //     success: function (vendite) {
+    //     // ---------------- Grafico vendite vendite_mensili--------------------------
+    //
+    //         // Costruisco un oggetto che mappa i mesi con i dati delle vendite
+    //         var dati_vendite_mensili = genera_vendite_mensili(vendite);
+    //
+    //         // Estraggo le chiavi dell'oggetto vendite mensili che saranno le etichette del grafico
+    //         // Queste corrispondono ai nomi dei mesi
+    //         var mesi = Object.keys(dati_vendite_mensili);
+    //         console.log(mesi);
+    //
+    //         // Estraggo i valori dell'oggetto vendite mensili che saranno i dati del grafico
+    //         // Queste corrispondono agli importi delle vendite nel mese
+    //         var dati_mesi = Object.values(dati_vendite_mensili);
+    //         console.log(dati_mesi);
+    //         // Disegno il grafico passando le etichette e i dati
+    //         disegna_grafico_vendite_mensili(mesi, dati_mesi)
+    //
+    //     // ---------------- Grafico vendite venditore--------------------------
+    //
+    //         // Costruisco un oggetto che mappa i venditori con il totale delle vendite
+    //         var dati_vendite_venditore = genera_vendite_venditori(vendite);
+    //
+    //         // Estraggo le chiavi dell'oggetto dati_vendite_venditore
+    //         // Queste corrispondono ai nomi dei venditori
+    //         var nomi_venditori = Object.keys(dati_vendite_venditore);
+    //         console.log(nomi_venditori);
+    //         // Estraggo i valori dell'oggetto vendite contributo venditore
+    //         // Queste corrispondono alle vendite totali di ciascun venditore
+    //         var dati_venditori = Object.values(dati_vendite_venditore);
+    //         console.log(dati_venditori);
+    //         // Disegno il grafico passando le etichette e i dati
+    //         disegna_grafico_vendite_venditori(nomi_venditori, dati_venditori)
+    //
+    //     },
+    //     error : function () {
+    //         alert("E' avvenuto un errore. "+errore);
+    //     }
+    // })
 })
 
 function genera_vendite_mensili (data){
@@ -84,7 +136,7 @@ function genera_vendite_mensili (data){
         var mese_alfanumerico = moment(data_vendita, "DD/MM/YYYY").format('MMMM')
         console.log('Mese della vendita: ' + mese_alfanumerico);
         // Recupero l'importo di ogni singola vendita
-        var importo_vendita = vendite_azienda.amount;
+        var importo_vendita = parseInt(vendite_azienda.amount);
         console.log('Importo vendita: ' + importo_vendita);
         // // Recupero il nome del venditore
         // var venditore = vendite_azienda.salesman;
@@ -111,7 +163,7 @@ function genera_vendite_venditori(data){
         // /recupero la vendita corrente
         var vendite_azienda = data[i];
         // Recupero l'importo di ogni singola vendita
-        var importo_vendita = vendite_azienda.amount;
+        var importo_vendita = parseInt(vendite_azienda.amount);
         // Recupero il nome del venditore
         var venditore = vendite_azienda.salesman;
         // Verifico se non esiste questo venditore nelle iterazioni precedenti
@@ -126,7 +178,7 @@ function genera_vendite_venditori(data){
         // Incremento il totale delle vendite aziendali con l'importo corrente
         totale_vendite += importo_vendita;
     }
-
+    console.log(totale_vendite);
 
     for (var venditore in vendite_venditore) {
         console.log(vendite_venditore[venditore]);
@@ -142,7 +194,7 @@ function genera_vendite_venditori(data){
 
 function disegna_grafico_vendite_mensili (labels, dati){
 
-    var myChart = new Chart($('#grafico_vendite_mensili')[0].getContext('2d'), {
+    var grafico_vendite_mensili = new Chart($('#grafico_vendite_mensili')[0].getContext('2d'), {
         type: 'line',
         data: {
             labels: labels,
@@ -168,11 +220,12 @@ function disegna_grafico_vendite_mensili (labels, dati){
             }
         }
     });
+
 }
 
 function disegna_grafico_vendite_venditori ( labels, dati) {
 
-    var myChart = new Chart($('#grafico_vendite_venditori')[0].getContext('2d'), {
+    var grafico_vendite_venditori = new Chart($('#grafico_vendite_venditori')[0].getContext('2d'), {
         type: 'pie',
         data: {
             labels: labels,
@@ -197,6 +250,56 @@ function disegna_grafico_vendite_venditori ( labels, dati) {
             }]
         },
     });
+
 }
+
+function visualizza_dati (){
+
+    $.ajax({
+        url: url_api,
+        method: 'GET',
+        success : function (vendite) {
+        // ---------------- Grafico vendite vendite_mensili--------------------------
+
+            // Costruisco un oggetto che mappa i mesi con i dati delle vendite
+            var dati_vendite_mensili = genera_vendite_mensili(vendite);
+            console.log(dati_vendite_mensili);
+
+            // Estraggo le chiavi dell'oggetto vendite mensili che saranno le etichette del grafico
+            // Queste corrispondono ai nomi dei mesi
+            var mesi = Object.keys(dati_vendite_mensili);
+            console.log(mesi);
+
+            // Estraggo i valori dell'oggetto vendite mensili che saranno i dati del grafico
+            // Queste corrispondono agli importi delle vendite nel mese
+            var dati_mesi = Object.values(dati_vendite_mensili);
+            console.log(dati_mesi);
+            // Disegno il grafico passando le etichette e i dati
+            disegna_grafico_vendite_mensili(mesi, dati_mesi)
+
+        // ---------------- Grafico vendite venditore--------------------------
+
+            // Costruisco un oggetto che mappa i venditori con il totale delle vendite
+            var dati_vendite_venditore = genera_vendite_venditori(vendite);
+
+            // Estraggo le chiavi dell'oggetto dati_vendite_venditore
+            // Queste corrispondono ai nomi dei venditori
+            var nomi_venditori = Object.keys(dati_vendite_venditore);
+            console.log(nomi_venditori);
+            // Estraggo i valori dell'oggetto vendite contributo venditore
+            // Queste corrispondono alle vendite totali di ciascun venditore
+            var dati_venditori = Object.values(dati_vendite_venditore);
+            console.log(dati_venditori);
+            // Disegno il grafico passando le etichette e i dati
+            disegna_grafico_vendite_venditori(nomi_venditori, dati_venditori)
+
+        },
+        error : function () {
+            alert("E' avvenuto un errore. "+errore);
+    }
+    })
+
+}
+
 
 });

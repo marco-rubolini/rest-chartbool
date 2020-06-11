@@ -10,12 +10,40 @@
 
     </head>
     <body>
-
-        <div class="chart-container">
-            <canvas id="grafico_vendite_mensili"></canvas>
-            <canvas id="grafico_vendite_venditori"></canvas>
+        <header>
+            <div class="carica-vendite">
+                <select class="venditori" name="venditori">
+                    <option value="">Seleziona venditore</option>
+                    <option value="Marco">Marco</option>
+                    <option value="Giuseppe">Giuseppe</option>
+                    <option value="Riccardo">Riccardo</option>
+                    <option value="Roberto">Roberto</option>
+                </select>
+                <select class="mese" name="mese">
+                    <option value="">Seleziona mese</option>
+                    <option value="gennaio">gennaio</option>
+                    <option value="febbraio">febbraio</option>
+                    <option value="marzo">marzo</option>
+                    <option value="aprile">aprile</option>
+                    <option value="maggio">maggio</option>
+                    <option value="giugno">giugno</option>
+                    <option value="luglio">luglio</option>
+                    <option value="agosto">agosto</option>
+                    <option value="settembre">settembre</option>
+                    <option value="ottobre">ottobre</option>
+                    <option value="novembre">novembre</option>
+                    <option value="dicembre">dicembre</option>
+                </select>
+                <input class="importo-vendita-aggiunta" type="number" placeholder="Inserisci importo di vendita">
+                <button id="invio-dati" type="button" name="button">Carica</button>
+            </div>
+        </header>
+        <div class="main">
+            <div class="chart-container">
+                <canvas id="grafico_vendite_mensili"></canvas>
+                <canvas id="grafico_vendite_venditori"></canvas>
+            </div>
         </div>
-
 
         <script src="main.js" charset="utf-8"></script>
     </body>
